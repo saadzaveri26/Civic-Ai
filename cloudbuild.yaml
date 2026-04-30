@@ -1,0 +1,18 @@
+steps:
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['build', '-t',
+           'asia-south1-docker.pkg.dev/$PROJECT_ID/civicai/civicai-app:$COMMIT_SHA', '.']
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push',
+           'asia-south1-docker.pkg.dev/$PROJECT_ID/civicai/civicai-app:$COMMIT_SHA']
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    args:
+      - 'gcloud'
+      - 'run'
+      - 'deploy'
+      - 'civicai'
+      - '--image=asia-south1-docker.pkg.dev/$PROJECT_ID/civicai/civicai-app:$COMMIT_SHA'
+      - '--region=asia-south1'
+      - '--platform=managed'
+images:
+  - 'asia-south1-docker.pkg.dev/$PROJECT_ID/civicai/civicai-app:$COMMIT_SHA'

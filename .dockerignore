@@ -1,0 +1,8 @@
+node_modules
+.next
+.env*
+.git
+README.md
+.gitignore
+AGENTS.md
+CLAUDE.md

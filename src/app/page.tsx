@@ -1,65 +1,174 @@
-import Image from "next/image";
+"use client";
 
-export default function Home() {
+import Link from "next/link";
+import { motion } from "framer-motion";
+import { BottomNav } from "@/components/BottomNav";
+import { TrendingUp, Bot, HelpCircle, ArrowRight, Vote } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { useAuth } from "@/lib/hooks/useAuth";
+import { Loader2, LogOut } from "lucide-react";
+
+const features = [
+  {
+    icon: TrendingUp,
+    title: "Timeline Journey",
+    description:
+      "Track key dates, local town halls, and registration deadlines with your personalized civic roadmap.",
+    link: "/journey",
+    linkText: "Explore Map",
+  },
+  {
+    icon: Bot,
+    title: "Ask AI Expert",
+    description:
+      "Neutral, fact-checked analysis of complex ballot measures and legislative impacts in plain language.",
+    link: "/ask",
+    linkText: "Open Chat",
+  },
+  {
+    icon: HelpCircle,
+    title: "Civic Quiz",
+    description:
+      "Test your knowledge on local governance and find out how proposed policies align with your values.",
+    link: "/quiz",
+    linkText: "Start Quiz",
+  },
+];
+
+export default function HomePage() {
+  const { user, loading, signInWithGoogle, logout } = useAuth();
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+    <main className="flex flex-col min-h-screen pb-20">
+      {/* Header */}
+      <header className="flex items-center justify-between px-5 py-4">
+        <div className="flex items-center gap-2">
+          <div className="w-8 h-8 rounded-lg bg-electric/20 flex items-center justify-center">
+            <Vote className="w-4 h-4 text-electric" />
+          </div>
+          <span className="font-bold text-lg text-foreground">CivicAI</span>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+        <div className="flex items-center gap-2">
+          {loading ? (
+            <Loader2 className="w-5 h-5 text-muted-foreground animate-spin" />
+          ) : user ? (
+            <div className="flex items-center gap-3">
+              <span className="text-xs font-medium text-muted-foreground hidden sm:inline-block">
+                {user.displayName || "User"}
+              </span>
+              {user.photoURL ? (
+                <img src={user.photoURL} alt="Profile" className="w-8 h-8 rounded-full border border-border" />
+              ) : (
+                <div className="w-8 h-8 rounded-full bg-secondary flex items-center justify-center">
+                  <span className="text-xs">👤</span>
+                </div>
+              )}
+              <Button variant="ghost" size="icon" onClick={logout} className="h-8 w-8 text-muted-foreground hover:text-red-400" title="Sign out">
+                <LogOut className="w-4 h-4" />
+              </Button>
+            </div>
+          ) : (
+            <Button variant="outline" size="sm" onClick={signInWithGoogle} className="text-xs h-8 bg-card border-border hover:bg-electric/10 hover:border-electric">
+              Sign In
+            </Button>
+          )}
         </div>
-      </main>
-    </div>
+      </header>
+
+      {/* Hero Section */}
+      <section className="px-5 pt-8 pb-10 text-center">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+        >
+          <Badge className="bg-electric/10 text-electric border-electric/20 mb-6 px-4 py-1.5">
+            <span className="w-1.5 h-1.5 rounded-full bg-green-400 mr-2 inline-block animate-pulse" />
+            LIVE ELECTION DATA 2024
+          </Badge>
+        </motion.div>
+
+        <motion.h1
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.7, delay: 0.1 }}
+          className="text-4xl md:text-5xl font-bold leading-tight mb-4"
+        >
+          Understand Your Vote.{" "}
+          <span className="gradient-text">Shape Your Democracy.</span>
+        </motion.h1>
+
+        <motion.p
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.2 }}
+          className="text-muted-foreground text-base max-w-md mx-auto mb-8 leading-relaxed"
+        >
+          CivicAI demystifies complex electoral data, ballot measures, and
+          candidate platforms using verified information and neutral AI analysis.
+          Your journey to an informed vote starts here.
+        </motion.p>
+
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.3 }}
+          className="flex flex-col gap-3 max-w-xs mx-auto"
+        >
+          <Link href="/journey">
+            <Button className="w-full bg-electric hover:bg-electric/80 text-white font-semibold py-6 text-base rounded-xl">
+              Start Your Journey
+            </Button>
+          </Link>
+          <Link href="/ask">
+            <Button
+              variant="outline"
+              className="w-full border-border hover:bg-secondary/50 font-semibold py-6 text-base rounded-xl"
+            >
+              Ask AI Assistant
+            </Button>
+          </Link>
+        </motion.div>
+      </section>
+
+      {/* Feature Cards */}
+      <section className="px-5 space-y-4 pb-8">
+        {features.map((feature, index) => {
+          const Icon = feature.icon;
+          return (
+            <motion.div
+              key={feature.title}
+              initial={{ opacity: 0, y: 40 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.4 + index * 0.15 }}
+            >
+              <Link href={feature.link}>
+                <Card className="bg-card border-border hover:glow-blue transition-all duration-300 group">
+                  <CardContent className="p-5">
+                    <div className="w-10 h-10 rounded-xl bg-electric/10 flex items-center justify-center mb-4 group-hover:bg-electric/20 transition-colors">
+                      <Icon className="w-5 h-5 text-electric" />
+                    </div>
+                    <h3 className="font-bold text-lg text-foreground mb-2">
+                      {feature.title}
+                    </h3>
+                    <p className="text-muted-foreground text-sm leading-relaxed mb-3">
+                      {feature.description}
+                    </p>
+                    <span className="text-electric text-sm font-semibold inline-flex items-center gap-1 group-hover:gap-2 transition-all">
+                      {feature.linkText}{" "}
+                      <ArrowRight className="w-4 h-4" />
+                    </span>
+                  </CardContent>
+                </Card>
+              </Link>
+            </motion.div>
+          );
+        })}
+      </section>
+
+      <BottomNav />
+    </main>
   );
 }
