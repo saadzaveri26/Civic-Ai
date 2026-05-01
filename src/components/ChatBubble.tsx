@@ -1,16 +1,17 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Bot, User } from "lucide-react";
+import { Bot, User, Mic } from "lucide-react";
 
 interface ChatBubbleProps {
   role: "user" | "assistant";
   content: string;
   timestamp?: string;
   index: number;
+  isVoice?: boolean;
 }
 
-export function ChatBubble({ role, content, timestamp, index }: ChatBubbleProps) {
+export function ChatBubble({ role, content, timestamp, index, isVoice }: ChatBubbleProps) {
   const isUser = role === "user";
 
   return (
@@ -49,13 +50,14 @@ export function ChatBubble({ role, content, timestamp, index }: ChatBubbleProps)
           }}
         />
         {timestamp && (
-          <p
-            className={`text-[10px] mt-1 ${
+          <div
+            className={`flex items-center gap-1 mt-1 ${
               isUser ? "text-white/60" : "text-muted-foreground"
             }`}
           >
-            {timestamp}
-          </p>
+            <p className="text-[10px]">{timestamp}</p>
+            {isUser && isVoice && <Mic className="w-3 h-3" />}
+          </div>
         )}
       </div>
     </motion.div>

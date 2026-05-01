@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/lib/hooks/useAuth";
+import { LanguageSelector } from "@/components/LanguageSelector";
 import { Loader2, LogOut } from "lucide-react";
 
 const features = [
@@ -51,6 +52,7 @@ export default function HomePage() {
           <span className="font-bold text-lg text-foreground">CivicAI</span>
         </div>
         <div className="flex items-center gap-2">
+          <LanguageSelector />
           {loading ? (
             <Loader2 className="w-5 h-5 text-muted-foreground animate-spin" />
           ) : user ? (

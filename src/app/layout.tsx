@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
+import { LanguageProvider } from "@/lib/i18n";
+import { NewsNavLink } from "@/components/NewsNavLink";
 
 const inter = Inter({
   variable: "--font-sans",
@@ -22,7 +24,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`${inter.variable} h-full antialiased dark`} data-scroll-behavior="smooth">
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col relative">
+        <LanguageProvider>
+          <NewsNavLink />
+          {children}
+        </LanguageProvider>
+      </body>
     </html>
   );
 }

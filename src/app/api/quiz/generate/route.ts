@@ -1,10 +1,35 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
-const PROMPT = `Generate exactly 5 multiple choice questions about the democratic election process. Return ONLY a JSON array with no markdown, no preamble, no code fences. Schema: [{"question": string, "options": [string, string, string, string], "correctIndex": 0|1|2|3, "explanation": string}]. Questions must be factual, non-partisan, and educational. Cover topics like voter registration, EVMs, VVPAT, counting process, and government formation.`;
+const BASE_PROMPT = `Generate exactly 5 multiple choice questions about the democratic election process. Return ONLY a JSON array with no markdown, no preamble, no code fences. Schema: [{"question": string, "options": [string, string, string, string], "correctIndex": 0|1|2|3, "explanation": string}]. Questions must be factual, non-partisan, and educational. Cover topics like voter registration, EVMs, VVPAT, counting process, and government formation.`;
 
-export async function POST() {
+const LANGUAGE_MAP: Record<string, string> = {
+  en: "English",
+  hi: "Hindi",
+  mr: "Marathi",
+  ta: "Tamil",
+  te: "Telugu",
+  bn: "Bengali",
+  gu: "Gujarati",
+  kn: "Kannada",
+};
+
+export async function POST(request: NextRequest) {
   try {
+    let language = "en";
+    try {
+      const body = await request.json();
+      language = body?.language || "en";
+    } catch {
+      // No body or invalid JSON — default to English
+    }
+
+    const langName = LANGUAGE_MAP[language] || "English";
+    const PROMPT =
+      language && language !== "en"
+        ? `${BASE_PROMPT}\n\nGenerate all questions, options and explanations in ${langName}.`
+        : BASE_PROMPT;
+
     const apiKey = process.env.GEMINI_API_KEY;
     if (!apiKey) {
       return NextResponse.json({ error: "API key not configured" }, { status: 500 });

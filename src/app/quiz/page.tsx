@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Vote, Sparkles, Share2, RotateCcw, Trophy } from "lucide-react";
+import { useLanguage } from "@/lib/i18n";
 
 interface QuizQuestion {
   question: string;
@@ -17,6 +18,7 @@ interface QuizQuestion {
 }
 
 export default function QuizPage() {
+  const { language } = useLanguage();
   const [questions, setQuestions] = useState<QuizQuestion[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [score, setScore] = useState(0);
@@ -25,7 +27,11 @@ export default function QuizPage() {
   const generateQuiz = async () => {
     setPhase("loading");
     try {
-      const res = await fetch("/api/quiz/generate", { method: "POST" });
+      const res = await fetch("/api/quiz/generate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ language }),
+      });
       const data = await res.json();
       if (Array.isArray(data) && data.length > 0) {
         setQuestions(data);

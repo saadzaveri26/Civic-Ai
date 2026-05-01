@@ -7,9 +7,10 @@ interface SuggestionChipProps {
   text: string;
   onSelect: (text: string) => void;
   index: number;
+  size?: "sm" | "md";
 }
 
-export function SuggestionChip({ text, onSelect, index }: SuggestionChipProps) {
+export function SuggestionChip({ text, onSelect, index, size = "md" }: SuggestionChipProps) {
   return (
     <motion.div
       initial={{ opacity: 0, scale: 0.9 }}
@@ -18,7 +19,11 @@ export function SuggestionChip({ text, onSelect, index }: SuggestionChipProps) {
     >
       <Badge
         variant="outline"
-        className="cursor-pointer px-3 py-2 text-sm bg-card hover:bg-electric/10 hover:border-electric hover:text-electric-dim transition-all duration-200 whitespace-normal text-left"
+        className={`cursor-pointer bg-card hover:bg-electric/10 hover:border-electric hover:text-electric-dim transition-all duration-200 whitespace-normal text-left ${
+          size === "sm"
+            ? "px-2 py-1 text-xs"
+            : "px-3 py-2 text-sm"
+        }`}
         onClick={() => onSelect(text)}
       >
         {text}
@@ -26,3 +31,4 @@ export function SuggestionChip({ text, onSelect, index }: SuggestionChipProps) {
     </motion.div>
   );
 }
+
