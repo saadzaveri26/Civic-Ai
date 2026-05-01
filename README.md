@@ -194,4 +194,4 @@ gcloud run deploy civicai \
 
 ---
 
-*Built with ❤️ for the PromptWars Hackathon.*
+*Built with ❤️ for the PromptWars Challenge *
