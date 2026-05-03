@@ -4,7 +4,7 @@
 
 CivicAI is a modern, non-partisan web application that helps citizens understand the democratic election process clearly and accurately. It demystifies complex electoral concepts using AI-powered explanations, supports 8 Indian languages, and provides an interactive learning experience — from voter registration to government formation.
 
-🔗 **Live Demo:** [https://civicai-808605522812.asia-south1.run.app](https://civicai-808605522812.asia-south1.run.app)
+🔗 **Live Demo:** [https://civic-ai-app-808605522812.asia-south1.run.app](https://civic-ai-app-808605522812.asia-south1.run.app)
 
 ---
 
@@ -40,10 +40,32 @@ CivicAI is a modern, non-partisan web application that helps citizens understand
 - 8-step visual roadmap from Voter Registration to Government Formation
 - Progress tracking saved via Firebase Firestore
 
-### 🔐 Secure Authentication
-- Google Sign-In via Firebase Authentication
-- Popup-based auth with automatic redirect fallback
-- Cross-Origin-Opener-Policy configured for Next.js 16+ compatibility
+---
+
+## 🏗️ Production-Grade Architecture
+
+### 🔐 Security Hardening
+- **API Validation:** Comprehensive Zod schemas for all incoming API requests
+- **Rate Limiting:** In-memory sliding window rate limits to prevent abuse (e.g., 20 chat requests/min, 10 quiz requests/min)
+- **Token Verification:** Firebase Admin SDK ensures secure server-side validation of ID tokens
+- **Headers:** Strict security headers configured in `next.config.ts` (XSS Protection, Frame Options, Permissions Policy)
+
+### 🚀 Performance & Optimization
+- **React Optimizations:** Strategic use of `React.memo`, `useMemo`, and `useCallback` to prevent unnecessary re-renders
+- **Image Optimization:** Integrated `next/image` for automatic image resizing and modern format delivery
+- **Loading States:** Implemented Next.js `loading.tsx` skeletons for seamless route transitions
+- **Production Build:** Advanced CSS optimization and compression enabled
+
+### ♿ Accessibility (A11y)
+- **WCAG Compliance:** Strict adherence to 4.5:1 color contrast ratios
+- **Keyboard Navigation:** Full keyboard support with `tabIndex` and `onKeyDown` listeners
+- **Screen Reader Support:** Comprehensive `aria-labels`, `role="alert"`, `aria-live="assertive"`, and semantic HTML (`<main>`, `<article>`)
+- **Skip Links:** "Skip to main content" link for rapid navigation
+- **Heading Hierarchy:** Strict `h1` → `h2` → `h3` structure
+
+### 📊 Observability & Testing
+- **Google Cloud Logging:** Structured server-side logging for API requests capturing performance metrics (`responseTime`), cache hit rates, and usage data. Falls back to console locally.
+- **Test Suite:** 100% passing test coverage on critical components and API routes using Jest, React Testing Library, and JSDOM.
 
 ---
 
@@ -52,51 +74,14 @@ CivicAI is a modern, non-partisan web application that helps citizens understand
 | Layer | Technology |
 |---|---|
 | **Framework** | Next.js 16 (App Router), React 19, TypeScript |
-| **Styling** | Tailwind CSS v4, custom design tokens (Electric Blue / Deep Navy) |
+| **Styling** | Tailwind CSS v4, custom design tokens |
 | **Components** | shadcn/ui (Base UI), Lucide Icons |
 | **Animations** | Framer Motion |
 | **AI Engine** | Google Gemini 2.5 Flash (`@google/generative-ai`) |
-| **Auth & DB** | Firebase Authentication + Firestore |
-| **Voice** | Web Speech API (SpeechRecognition) |
-| **Deployment** | Docker → Google Cloud Run (asia-south1) |
-| **CI/CD** | Google Cloud Build |
-
----
-
-## 📁 Project Structure
-
-```
-src/
-├── app/
-│   ├── api/
-│   │   ├── chat/route.ts        # AI chat + follow-up generation
-│   │   ├── news/route.ts        # AI news feed with caching
-│   │   ├── quiz/generate/route.ts
-│   │   ├── quiz/submit/route.ts
-│   │   └── progress/route.ts
-│   ├── ask/page.tsx              # Chat interface with voice input
-│   ├── news/page.tsx             # Election news feed
-│   ├── quiz/page.tsx             # Civic quiz
-│   ├── journey/page.tsx          # Election timeline
-│   ├── layout.tsx                # Root layout with LanguageProvider
-│   └── page.tsx                  # Homepage
-├── components/
-│   ├── ui/                       # shadcn components
-│   ├── BottomNav.tsx
-│   ├── ChatBubble.tsx            # Chat bubble with voice indicator
-│   ├── LanguageSelector.tsx      # 8-language dropdown
-│   ├── NewsCard.tsx              # News card with detail sheet
-│   ├── NewsNavLink.tsx
-│   ├── SuggestionChip.tsx        # Reusable chip (sm/md sizes)
-│   └── VoiceInputButton.tsx      # Mic button with pulse animation
-├── lib/
-│   ├── hooks/
-│   │   ├── useAuth.ts            # Firebase auth with redirect fallback
-│   │   └── useSpeechRecognition.ts  # Web Speech API hook
-│   ├── firebase.ts
-│   ├── i18n.ts                   # LanguageProvider + context
-│   └── utils.ts
-```
+| **Auth & DB** | Firebase Authentication + Firebase Admin SDK + Firestore |
+| **Testing** | Jest, React Testing Library, JSDOM |
+| **Observability** | Google Cloud Logging (`@google-cloud/logging`) |
+| **Deployment** | Google Cloud Run (asia-south1) |
 
 ---
 
@@ -106,6 +91,7 @@ src/
 - Node.js 20+
 - A [Google AI Studio](https://aistudio.google.com/) API Key (for Gemini)
 - A Firebase Project (with Authentication and Firestore enabled)
+- A Google Cloud Project (for Cloud Logging, optional locally)
 
 ### Installation
 
@@ -139,6 +125,11 @@ src/
    ```
    Open [http://localhost:3000](http://localhost:3000) to see the app.
 
+5. **Run tests:**
+   ```bash
+   npm run test
+   ```
+
 ---
 
 ## ☁️ Deployment (Google Cloud Run)
@@ -147,51 +138,20 @@ src/
 - [Google Cloud CLI (`gcloud`)](https://cloud.google.com/sdk/docs/install) installed and authenticated
 - A Google Cloud project with billing enabled
 
-### Quick Deploy
+### Deploy from Source
 
 ```bash
 # Set your project
 gcloud config set project YOUR_PROJECT_ID
 
-# Deploy with environment variables
-gcloud run deploy civicai \
+# Deploy directly from source using Google Cloud Buildpacks
+gcloud run deploy civic-ai-app \
   --source . \
   --region asia-south1 \
-  --platform managed \
   --allow-unauthenticated \
-  --port 3080 \
-  --memory 1Gi \
-  --set-env-vars "GEMINI_API_KEY=your-key"
+  --set-env-vars "GEMINI_API_KEY=your-key,FIREBASE_PROJECT_ID=your-id"
 ```
 
-### Using Cloud Build (CI/CD)
-
-1. **Enable required APIs:**
-   ```bash
-   gcloud services enable cloudbuild.googleapis.com run.googleapis.com artifactregistry.googleapis.com
-   ```
-
-2. **Create Artifact Registry:**
-   ```bash
-   gcloud artifacts repositories create civicai --repository-format=docker --location=asia-south1
-   ```
-
-3. **Submit build:**
-   ```bash
-   gcloud builds submit --config cloudbuild.yaml .
-   ```
-
-4. **Set environment variables** in Cloud Run Console → Edit & Deploy → Variables & Secrets.
-
 ---
 
-## 🔒 Security
-
-- All sensitive keys (`GEMINI_API_KEY`, `FIREBASE_PRIVATE_KEY`) are server-side only — never exposed to the client
-- Firebase client config keys (`NEXT_PUBLIC_*`) are public by design and restricted via Firebase Security Rules
-- `.env*` files are excluded from version control via `.gitignore`
-- Docker runs as non-root user (`nextjs:nodejs`)
-
----
-
-*Built with ❤️ for the PromptWars Challenge *
+*Built with ❤️ for the PromptWars Challenge*
