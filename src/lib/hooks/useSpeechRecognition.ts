@@ -58,6 +58,13 @@ const LANGUAGE_MAP: Record<string, string> = {
   kn: "kn-IN",
 };
 
+/**
+ * Custom hook for browser-native speech recognition using the Web Speech API.
+ * Automatically maps the current app language to an appropriate BCP-47 locale
+ * for recognition. Supports start/stop control and returns interim/final transcripts.
+ *
+ * @returns An object with listening state, transcript, error, support flag, and control functions.
+ */
 export function useSpeechRecognition() {
   const { language } = useLanguage();
   const [isListening, setIsListening] = useState(false);
@@ -116,8 +123,7 @@ export function useSpeechRecognition() {
     try {
       recognition.start();
       setIsListening(true);
-    } catch (e) {
-      console.error("Speech recognition start failed", e);
+    } catch {
       setIsListening(false);
     }
   }, [language, isSupported]);

@@ -1,15 +1,16 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { BottomNav } from "@/components/BottomNav";
-import { TrendingUp, Bot, HelpCircle, ArrowRight, Vote } from "lucide-react";
+import { TrendingUp, Bot, HelpCircle, ArrowRight, Vote, Loader2, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/lib/hooks/useAuth";
 import { LanguageSelector } from "@/components/LanguageSelector";
-import { Loader2, LogOut } from "lucide-react";
+
 
 const features = [
   {
@@ -42,7 +43,7 @@ export default function HomePage() {
   const { user, loading, signInWithGoogle, logout } = useAuth();
 
   return (
-    <main className="flex flex-col min-h-screen pb-20">
+    <main id="main-content" className="flex flex-col min-h-screen pb-20">
       {/* Header */}
       <header className="flex items-center justify-between px-5 py-4">
         <div className="flex items-center gap-2">
@@ -61,7 +62,7 @@ export default function HomePage() {
                 {user.displayName || "User"}
               </span>
               {user.photoURL ? (
-                <img src={user.photoURL} alt="Profile" className="w-8 h-8 rounded-full border border-border" />
+                <Image src={user.photoURL} alt="Profile" width={32} height={32} className="w-8 h-8 rounded-full border border-border" />
               ) : (
                 <div className="w-8 h-8 rounded-full bg-secondary flex items-center justify-center">
                   <span className="text-xs">👤</span>
@@ -152,9 +153,9 @@ export default function HomePage() {
                     <div className="w-10 h-10 rounded-xl bg-electric/10 flex items-center justify-center mb-4 group-hover:bg-electric/20 transition-colors">
                       <Icon className="w-5 h-5 text-electric" />
                     </div>
-                    <h3 className="font-bold text-lg text-foreground mb-2">
+                    <h2 className="font-bold text-lg text-foreground mb-2">
                       {feature.title}
-                    </h3>
+                    </h2>
                     <p className="text-muted-foreground text-sm leading-relaxed mb-3">
                       {feature.description}
                     </p>

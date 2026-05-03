@@ -18,6 +18,7 @@ export function LanguageSelector() {
     <DropdownMenu>
       <DropdownMenuTrigger
         className="inline-flex items-center gap-1.5 h-8 px-2 text-xs text-muted-foreground hover:text-foreground rounded-md hover:bg-accent transition-colors outline-none cursor-pointer"
+        aria-label="Select language"
       >
         <Globe className="w-4 h-4" />
         <span className="hidden sm:inline-block">{currentLang?.nativeName ?? "English"}</span>

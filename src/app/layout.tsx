@@ -17,14 +17,21 @@ export const metadata: Metadata = {
   keywords: ["election", "voting", "democracy", "civic education", "AI assistant"],
 };
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+/** Props for the root layout component. */
+interface RootLayoutProps {
+  readonly children: React.ReactNode;
+}
+
+export default function RootLayout({ children }: RootLayoutProps) {
   return (
     <html lang="en" className={`${inter.variable} h-full antialiased dark`} data-scroll-behavior="smooth">
       <body className="min-h-full flex flex-col relative">
+        <a
+          href="#main-content"
+          className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:bg-blue-600 focus:text-white focus:p-2 focus:rounded"
+        >
+          Skip to main content
+        </a>
         <LanguageProvider>
           <NewsNavLink />
           {children}

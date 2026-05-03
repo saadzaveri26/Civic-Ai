@@ -40,7 +40,9 @@ interface NewsCardProps {
   index: number;
 }
 
-export function NewsCard({ news, index }: NewsCardProps) {
+import React from "react";
+
+export const NewsCard = React.memo(function NewsCard({ news, index }: NewsCardProps) {
   const router = useRouter();
   
   const relatedTopics = relatedTopicsMap[news.category] || relatedTopicsMap["Voting"];
@@ -61,7 +63,7 @@ export function NewsCard({ news, index }: NewsCardProps) {
         className="h-full"
       >
         <SheetTrigger className="h-full w-full text-left outline-none">
-          <Card className="p-4 bg-card border-border hover:shadow-lg hover:shadow-electric/10 hover:border-electric/50 transition-all cursor-pointer h-full flex flex-col group">
+          <Card role="article" className="p-4 bg-card border-border hover:shadow-lg hover:shadow-electric/10 hover:border-electric/50 transition-all cursor-pointer h-full flex flex-col group">
             <div className="flex justify-between items-start mb-3">
               <div className="flex items-center gap-2">
                 <Badge variant="outline" className={categoryColors[news.category] || "bg-secondary text-secondary-foreground"}>
@@ -76,12 +78,12 @@ export function NewsCard({ news, index }: NewsCardProps) {
               <span className="text-xs text-muted-foreground font-medium uppercase tracking-wider">{news.state}</span>
             </div>
             
-            <h3 className="font-semibold text-base mb-2 group-hover:text-electric transition-colors line-clamp-2">
+            <h2 className="font-semibold text-base mb-2 group-hover:text-electric transition-colors line-clamp-2">
               {news.headline}
-            </h3>
+            </h2>
             
             <div className="mt-auto pt-3">
-              <p className="text-sm text-slate-400 line-clamp-2 mb-3">
+              <p className="text-sm text-slate-300 line-clamp-2 mb-3">
                 {news.summary}
               </p>
               <div className="flex justify-end">
@@ -133,4 +135,4 @@ export function NewsCard({ news, index }: NewsCardProps) {
       </SheetContent>
     </Sheet>
   );
-}
+});

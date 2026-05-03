@@ -59,7 +59,7 @@ export function QuizCard({
             {question.question}
           </h2>
 
-          <div className="space-y-3">
+          <div className="space-y-3" role="radiogroup" aria-label="Quiz options">
             {question.options.map((option, index) => {
               let buttonStyle = "bg-secondary/50 border-border text-foreground hover:bg-secondary";
 
@@ -85,6 +85,8 @@ export function QuizCard({
                   transition={{ duration: 0.4 }}
                 >
                   <Button
+                    role="radio"
+                    aria-checked={selectedIndex === index}
                     variant="outline"
                     className={`w-full justify-start text-left h-auto py-4 px-4 text-sm ${buttonStyle} transition-all duration-200`}
                     onClick={() => handleSelect(index)}

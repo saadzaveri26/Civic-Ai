@@ -59,6 +59,13 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
   );
 }
 
+/**
+ * Custom hook to access and update the current language setting.
+ * Must be used within a {@link LanguageProvider} component.
+ *
+ * @returns An object with the current `language` code and a `setLanguage` setter.
+ * @throws If used outside of a LanguageProvider context.
+ */
 export function useLanguage() {
   const context = useContext(LanguageContext);
   if (!context) {

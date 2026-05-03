@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { Newspaper, RefreshCw, Inbox } from "lucide-react";
 import { useLanguage } from "@/lib/i18n";
 import { NewsCard, NewsItem } from "@/components/NewsCard";
@@ -31,8 +31,8 @@ export default function NewsPage() {
       if (Array.isArray(data)) {
         setNews(data);
       }
-    } catch (error) {
-      console.error("Failed to fetch news:", error);
+    } catch {
+      // Fetch errors are silently handled; the previous data or empty state remains
     } finally {
       setLoading(false);
       setRefreshing(false);
@@ -43,12 +43,14 @@ export default function NewsPage() {
     fetchNews();
   }, [fetchNews]);
 
-  const filteredNews = selectedCategory === "All"
-    ? news
-    : news.filter((item) => item.category === selectedCategory);
+  const filteredNews = React.useMemo(() => {
+    return selectedCategory === "All"
+      ? news
+      : news.filter((item) => item.category === selectedCategory);
+  }, [news, selectedCategory]);
 
   return (
-    <main className="flex flex-col min-h-screen pb-20">
+    <main id="main-content" className="flex flex-col min-h-screen pb-20">
       <header className="flex items-center px-5 py-4 border-b border-border flex-shrink-0">
         <div className="flex items-center gap-2">
           <div className="w-8 h-8 rounded-lg bg-electric/20 flex items-center justify-center">
@@ -74,7 +76,7 @@ export default function NewsPage() {
             onClick={() => fetchNews(true)}
             disabled={refreshing || loading}
             className="rounded-full w-10 h-10 border-border hover:bg-secondary flex-shrink-0"
-            aria-label="Refresh news"
+            aria-label="Refresh news feed"
           >
             <RefreshCw className={`w-4 h-4 text-muted-foreground ${refreshing ? "animate-spin" : ""}`} />
           </Button>
@@ -126,7 +128,7 @@ export default function NewsPage() {
             <div className="w-16 h-16 rounded-full bg-secondary flex items-center justify-center mb-4">
               <Inbox className="w-8 h-8 text-muted-foreground" />
             </div>
-            <h3 className="text-xl font-semibold mb-2">No {selectedCategory !== "All" ? selectedCategory : ""} news right now</h3>
+            <h2 className="text-xl font-semibold mb-2">No {selectedCategory !== "All" ? selectedCategory : ""} news right now</h2>
             <p className="text-muted-foreground text-sm max-w-xs">
               Check back later or pull to refresh for the latest updates.
             </p>

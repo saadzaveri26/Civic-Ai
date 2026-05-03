@@ -1,4 +1,12 @@
 steps:
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    args:
+      - 'gcloud'
+      - 'logging'
+      - 'write'
+      - 'civicai-deployments'
+      - '{"event": "deployment_started", "commit": "$COMMIT_SHA"}'
+      - '--payload-type=json'
   - name: 'gcr.io/cloud-builders/docker'
     args: ['build', '-t',
            'asia-south1-docker.pkg.dev/$PROJECT_ID/civicai/civicai-app:$COMMIT_SHA', '.']

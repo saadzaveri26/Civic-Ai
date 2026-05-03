@@ -1,5 +1,7 @@
 "use client";
 
+import React from "react";
+
 import { BottomNav } from "@/components/BottomNav";
 import { ProgressBar } from "@/components/ProgressBar";
 import { TimelineStep } from "@/components/TimelineStep";
@@ -12,8 +14,10 @@ import { Skeleton } from "@/components/ui/skeleton";
 export default function JourneyPage() {
   const { completedSteps, loading, markStepComplete } = useJourneyProgress();
 
+  const memoizedSteps = React.useMemo(() => ELECTION_STEPS, []);
+
   return (
-    <main className="flex flex-col min-h-screen pb-20">
+    <main id="main-content" className="flex flex-col min-h-screen pb-20">
       {/* Header */}
       <header className="flex items-center justify-between px-5 py-4">
         <div className="flex items-center gap-2">
@@ -48,7 +52,7 @@ export default function JourneyPage() {
         ) : (
           <ProgressBar
             completed={completedSteps.length}
-            total={ELECTION_STEPS.length}
+            total={memoizedSteps.length}
           />
         )}
       </section>
@@ -60,7 +64,7 @@ export default function JourneyPage() {
             <Skeleton key={i} className="h-24 w-full rounded-xl" />
           ))
         ) : (
-          ELECTION_STEPS.map((step, index) => (
+          memoizedSteps.map((step, index) => (
             <TimelineStep
               key={step.id}
               step={step}

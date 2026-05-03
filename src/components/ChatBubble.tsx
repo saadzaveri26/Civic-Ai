@@ -11,7 +11,9 @@ interface ChatBubbleProps {
   isVoice?: boolean;
 }
 
-export function ChatBubble({ role, content, timestamp, index, isVoice }: ChatBubbleProps) {
+import React from "react";
+
+export const ChatBubble = React.memo(function ChatBubble({ role, content, timestamp, index, isVoice }: ChatBubbleProps) {
   const isUser = role === "user";
 
   return (
@@ -62,4 +64,4 @@ export function ChatBubble({ role, content, timestamp, index, isVoice }: ChatBub
       </div>
     </motion.div>
   );
-}
+});

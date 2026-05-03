@@ -61,7 +61,7 @@ export default function QuizPage() {
   };
 
   return (
-    <main className="flex flex-col min-h-screen pb-20">
+    <main id="main-content" className="flex flex-col min-h-screen pb-20">
       <header className="flex items-center px-5 py-4">
         <div className="flex items-center gap-2">
           <div className="w-8 h-8 rounded-lg bg-electric/20 flex items-center justify-center">

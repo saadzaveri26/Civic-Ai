@@ -51,7 +51,7 @@ export function VoiceInputButton({ onTranscript, onListeningChange, disabled }: 
     }
   };
 
-  let icon = <Mic className="w-5 h-5 text-slate-400" />;
+  let icon = <Mic className="w-5 h-5 text-slate-300" />;
   let tooltip = "Click to speak";
 
   if (isListening) {
@@ -77,6 +77,7 @@ export function VoiceInputButton({ onTranscript, onListeningChange, disabled }: 
         size="icon"
         onClick={handleClick}
         disabled={disabled && !isListening}
+        aria-label={isListening ? "Stop listening" : "Start voice input"}
         className="relative z-10 hover:bg-secondary rounded-full"
       >
         {icon}

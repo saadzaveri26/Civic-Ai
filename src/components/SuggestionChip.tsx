@@ -10,7 +10,9 @@ interface SuggestionChipProps {
   size?: "sm" | "md";
 }
 
-export function SuggestionChip({ text, onSelect, index, size = "md" }: SuggestionChipProps) {
+import React from "react";
+
+export const SuggestionChip = React.memo(function SuggestionChip({ text, onSelect, index, size = "md" }: SuggestionChipProps) {
   return (
     <motion.div
       initial={{ opacity: 0, scale: 0.9 }}
@@ -30,5 +32,4 @@ export function SuggestionChip({ text, onSelect, index, size = "md" }: Suggestio
       </Badge>
     </motion.div>
   );
-}
-
+});

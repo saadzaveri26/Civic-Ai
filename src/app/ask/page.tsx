@@ -1,15 +1,18 @@
 "use client";
 
 import { useState, useRef, useEffect, useCallback } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { BottomNav } from "@/components/BottomNav";
 import { ChatBubble } from "@/components/ChatBubble";
+import { ChatHeader } from "@/components/ChatHeader";
+import { ListeningBanner } from "@/components/ListeningBanner";
 import { SuggestionChip } from "@/components/SuggestionChip";
+import { TypingIndicator } from "@/components/TypingIndicator";
 import { VoiceInputButton } from "@/components/VoiceInputButton";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Send, Vote, Loader2 } from "lucide-react";
+import { Send } from "lucide-react";
 import { useLanguage, SUPPORTED_LANGUAGES } from "@/lib/i18n";
 
 interface Message {
@@ -20,34 +23,12 @@ interface Message {
 }
 
 const SUGGESTION_TRANSLATIONS: Record<string, string[]> = {
-  en: [
-    "How do I register to vote?",
-    "What happens on voting day?",
-    "How are votes counted?",
-    "What is VVPAT?",
-    "How long does the election process take?",
-    "What if I disagree with a result?",
-  ],
-  hi: [
-    "मैं मतदाता पंजीकरण कैसे करूं?",
-    "मतदान दिवस पर क्या होता है?",
-    "वोटों की गिनती कैसे होती है?",
-    "VVPAT क्या है?",
-    "चुनाव प्रक्रिया में कितना समय लगता है?",
-    "अगर मैं परिणाम से असहमत हूं तो क्या करूं?",
-  ],
-  mr: [
-    "मतदार नोंदणी कशी करावी?",
-    "मतदान दिवशी काय होते?",
-    "मते कशी मोजली जातात?",
-    "VVPAT म्हणजे काय?",
-    "निवडणूक प्रक्रियेला किती वेळ लागतो?",
-    "निकालाशी असहमत असल्यास काय करावे?",
-  ],
+  en: ["How do I register to vote?", "What happens on voting day?", "How are votes counted?", "What is VVPAT?", "How long does the election process take?", "What if I disagree with a result?"],
+  hi: ["मैं मतदाता पंजीकरण कैसे करूं?", "मतदान दिवस पर क्या होता है?", "वोटों की गिनती कैसे होती है?", "VVPAT क्या है?", "चुनाव प्रक्रिया में कितना समय लगता है?", "अगर मैं परिणाम से असहमत हूं तो क्या करूं?"],
+  mr: ["मतदार नोंदणी कशी करावी?", "मतदान दिवशी काय होते?", "मते कशी मोजली जातात?", "VVPAT म्हणजे काय?", "निवडणूक प्रक्रियेला किती वेळ लागतो?", "निकालाशी असहमत असल्यास काय करावे?"],
 };
 
-const GREETING =
-  "Hello! I'm your CivicAI assistant. I can help you with voter registration, polling information, and understanding ballot measures. How can I assist your democratic journey today?";
+const GREETING = "Hello! I'm your CivicAI assistant. I can help you with voter registration, polling information, and understanding ballot measures. How can I assist your democratic journey today?";
 
 function getTime() {
   return new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
@@ -70,9 +51,7 @@ export default function AskPage() {
 
   const handleVoiceTranscript = useCallback((text: string) => {
     setInput(text);
-    setTimeout(() => {
-      sendMessage(text, true);
-    }, 500);
+    setTimeout(() => { sendMessage(text, true); }, 500);
   }, []);
 
   useEffect(() => {
@@ -94,25 +73,15 @@ export default function AskPage() {
         const res = await fetch("/api/chat", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            messages: newMsgs.map((m) => ({ role: m.role, content: m.content })),
-            newMessage: text.trim(),
-            language,
-          }),
+          body: JSON.stringify({ messages: newMsgs.map((m) => ({ role: m.role, content: m.content })), newMessage: text.trim(), language }),
         });
         const data = await res.json();
-        setMessages((prev) => [
-          ...prev,
-          { role: "assistant", content: data.reply || "Could you try again?", timestamp: getTime() },
-        ]);
+        setMessages((prev) => [...prev, { role: "assistant", content: data.reply || "Could you try again?", timestamp: getTime() }]);
         if (Array.isArray(data.followUps) && data.followUps.length > 0) {
           setFollowUps(data.followUps);
         }
       } catch {
-        setMessages((prev) => [
-          ...prev,
-          { role: "assistant", content: "Connection issue. Please try again.", timestamp: getTime() },
-        ]);
+        setMessages((prev) => [...prev, { role: "assistant", content: "Connection issue. Please try again.", timestamp: getTime() }]);
       } finally {
         setIsLoading(false);
       }
@@ -120,27 +89,12 @@ export default function AskPage() {
     [messages, isLoading, language]
   );
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    sendMessage(input);
-  };
-
-  // Find the index of the last assistant message
-  const lastAssistantIndex = messages.reduce(
-    (lastIdx, msg, idx) => (msg.role === "assistant" ? idx : lastIdx),
-    -1
-  );
+  const handleSubmit = useCallback((e: React.FormEvent) => { e.preventDefault(); sendMessage(input); }, [input, sendMessage]);
+  const lastAssistantIndex = messages.reduce((lastIdx, msg, idx) => (msg.role === "assistant" ? idx : lastIdx), -1);
 
   return (
-    <main className="flex flex-col h-screen">
-      <header className="flex items-center px-5 py-4 border-b border-border flex-shrink-0">
-        <div className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-lg bg-electric/20 flex items-center justify-center">
-            <Vote className="w-4 h-4 text-electric" />
-          </div>
-          <span className="font-bold text-lg">CivicAI</span>
-        </div>
-      </header>
+    <main id="main-content" className="flex flex-col h-screen">
+      <ChatHeader />
 
       {showSuggestions && (
         <div className="flex gap-2 px-5 py-3 overflow-x-auto flex-shrink-0 border-b border-border/50">
@@ -155,50 +109,18 @@ export default function AskPage() {
           {messages.map((msg, i) => (
             <div key={i}>
               <ChatBubble role={msg.role} content={msg.content} timestamp={msg.timestamp} index={i} isVoice={msg.isVoice} />
-              {/* Show follow-up chips only after the latest assistant message */}
-              {msg.role === "assistant" &&
-                i === lastAssistantIndex &&
-                !isLoading &&
-                followUps.length > 0 && (
-                  <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ duration: 0.3, delay: 0.3 }}
-                    className="flex flex-wrap gap-2 mt-2 ml-11"
-                  >
-                    {followUps.map((text, chipIdx) => (
-                      <motion.div
-                        key={text}
-                        initial={{ opacity: 0, y: 8 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.25, delay: 0.3 + chipIdx * 0.15 }}
-                      >
-                        <SuggestionChip
-                          text={text}
-                          onSelect={sendMessage}
-                          index={chipIdx}
-                          size="sm"
-                        />
-                      </motion.div>
-                    ))}
-                  </motion.div>
-                )}
+              {msg.role === "assistant" && i === lastAssistantIndex && !isLoading && followUps.length > 0 && (
+                <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.3, delay: 0.3 }} className="flex flex-wrap gap-2 mt-2 ml-11">
+                  {followUps.map((text, chipIdx) => (
+                    <motion.div key={text} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.25, delay: 0.3 + chipIdx * 0.15 }}>
+                      <SuggestionChip text={text} onSelect={sendMessage} index={chipIdx} size="sm" />
+                    </motion.div>
+                  ))}
+                </motion.div>
+              )}
             </div>
           ))}
-          {isLoading && (
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex gap-3">
-              <div className="w-8 h-8 rounded-full bg-secondary border border-border flex items-center justify-center flex-shrink-0">
-                <Loader2 className="w-4 h-4 text-electric-dim animate-spin" />
-              </div>
-              <div className="bg-card border border-border rounded-2xl rounded-bl-md px-4 py-3">
-                <div className="flex gap-1">
-                  <span className="w-2 h-2 bg-muted-foreground rounded-full animate-bounce" />
-                  <span className="w-2 h-2 bg-muted-foreground rounded-full animate-bounce" style={{ animationDelay: "0.1s" }} />
-                  <span className="w-2 h-2 bg-muted-foreground rounded-full animate-bounce" style={{ animationDelay: "0.2s" }} />
-                </div>
-              </div>
-            </motion.div>
-          )}
+          {isLoading && <TypingIndicator />}
           {showSuggestions && messages.length === 1 && (
             <div className="flex flex-wrap gap-2 pt-2">
               {suggestions.slice(3).map((t, i) => (
@@ -211,28 +133,10 @@ export default function AskPage() {
       </ScrollArea>
 
       <div className="flex-shrink-0 mb-16 border-t border-border bg-background">
-        <AnimatePresence>
-          {isListening && (
-            <motion.div
-              initial={{ height: 0, opacity: 0, y: -10 }}
-              animate={{ height: "auto", opacity: 1, y: 0 }}
-              exit={{ height: 0, opacity: 0, y: -10 }}
-              className="overflow-hidden"
-            >
-              <div className="px-5 pt-3 pb-1 flex items-center gap-2 text-xs text-red-400">
-                <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
-                🎤 Listening in {currentLanguage.nativeName}...
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
+        <ListeningBanner isListening={isListening} languageNativeName={currentLanguage.nativeName} />
         <form onSubmit={handleSubmit} className="flex items-center gap-2 px-5 py-4">
           <Input value={input} onChange={(e) => setInput(e.target.value)} placeholder="Ask about candidates, registration..." className="flex-1 bg-card border-border focus-visible:ring-electric rounded-xl py-5" disabled={isLoading} aria-label="Chat message input" />
-          <VoiceInputButton
-            onTranscript={handleVoiceTranscript}
-            onListeningChange={setIsListening}
-            disabled={isLoading}
-          />
+          <VoiceInputButton onTranscript={handleVoiceTranscript} onListeningChange={setIsListening} disabled={isLoading} />
           <Button type="submit" size="icon" disabled={!input.trim() || isLoading} className="bg-electric hover:bg-electric/80 text-white rounded-xl h-10 w-10 flex-shrink-0" aria-label="Send message">
             <Send className="w-4 h-4" />
           </Button>

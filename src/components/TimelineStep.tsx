@@ -4,7 +4,6 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import {
   ChevronDown,
   Check,
@@ -16,9 +15,9 @@ import {
   Trophy,
   Scale,
   Landmark,
-  Clock,
 } from "lucide-react";
 import type { ElectionStep } from "@/lib/electionData";
+import { TimelineStepDetail } from "@/components/TimelineStepDetail";
 
 const iconMap: Record<string, React.ElementType> = {
   ClipboardCheck,
@@ -31,13 +30,22 @@ const iconMap: Record<string, React.ElementType> = {
   Landmark,
 };
 
+/** Props for the TimelineStep component. */
 interface TimelineStepProps {
+  /** Election step data to display. */
   step: ElectionStep;
+  /** Whether this step has been completed by the user. */
   isCompleted: boolean;
+  /** Callback to mark a step as complete. */
   onMarkComplete: (stepId: string) => void;
+  /** Index in the list, used for staggered animation delay. */
   index: number;
 }
 
+/**
+ * An expandable timeline card for a single election process step.
+ * Clicking toggles the detail panel rendered by `TimelineStepDetail`.
+ */
 export function TimelineStep({
   step,
   isCompleted,
@@ -54,6 +62,14 @@ export function TimelineStep({
       transition={{ duration: 0.4, delay: index * 0.1 }}
     >
       <Card
+        tabIndex={0}
+        aria-expanded={isExpanded}
+        onKeyDown={(e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            setIsExpanded(!isExpanded);
+          }
+        }}
         className={`cursor-pointer transition-all duration-300 border-l-4 ${
           isCompleted
             ? "border-l-green-500 bg-card/80"
@@ -80,9 +96,9 @@ export function TimelineStep({
 
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2 mb-1">
-                <h3 className="font-semibold text-foreground text-lg">
+                <h2 className="font-semibold text-foreground text-lg">
                   {step.title}
-                </h3>
+                </h2>
                 {isCompleted && (
                   <Badge className="bg-green-500/20 text-green-400 border-green-500/30 text-xs">
                     DONE
@@ -110,52 +126,12 @@ export function TimelineStep({
                 transition={{ duration: 0.3 }}
                 className="overflow-hidden"
               >
-                <div className="mt-4 pt-4 border-t border-border/50">
-                  <div className="flex items-center gap-2 mb-3 text-electric-dim">
-                    <IconComponent className="w-4 h-4" />
-                    <span className="text-xs font-semibold uppercase tracking-wider">
-                      Step {step.stepNumber} Details
-                    </span>
-                  </div>
-
-                  <p className="text-foreground/80 text-sm leading-relaxed mb-4">
-                    {step.details}
-                  </p>
-
-                  <div className="mb-4">
-                    <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">
-                      Key Facts
-                    </p>
-                    <div className="flex flex-wrap gap-2">
-                      {step.keyFacts.map((fact, i) => (
-                        <Badge
-                          key={i}
-                          variant="outline"
-                          className="text-xs bg-secondary/50 border-border"
-                        >
-                          {fact}
-                        </Badge>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div className="flex items-center gap-2 text-xs text-muted-foreground mb-4">
-                    <Clock className="w-3 h-3" />
-                    <span>{step.duration}</span>
-                  </div>
-
-                  {!isCompleted && (
-                    <Button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        onMarkComplete(step.id);
-                      }}
-                      className="w-full bg-electric hover:bg-electric/80 text-white font-semibold"
-                    >
-                      Mark as Read <Check className="w-4 h-4 ml-2" />
-                    </Button>
-                  )}
-                </div>
+                <TimelineStepDetail
+                  step={step}
+                  isCompleted={isCompleted}
+                  onMarkComplete={onMarkComplete}
+                  icon={IconComponent}
+                />
               </motion.div>
             )}
           </AnimatePresence>
